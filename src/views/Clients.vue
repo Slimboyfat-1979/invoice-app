@@ -7,13 +7,23 @@ const email = ref("");
 const address = ref("");
 
 async function addClient() {
-    const {data, error} = await supabase.from("clients").insert([{
+
+  const { data: userData } = await supabase.auth.getUser()
+
+  console.log("USER:", userData.user.id)
+
+  const { data, error } = await supabase
+    .from("clients")
+    .insert([
+      {
+        user_id: userData.user.id,
         name: name.value,
         email: email.value,
         address: address.value
-    }])
+      }
+    ])
 
-    console.log(data, error);
+  console.log("RESULT:", data, error)
 }
 
 </script>
