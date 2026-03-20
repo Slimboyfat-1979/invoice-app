@@ -20,6 +20,10 @@ async function addClient() {
     return
   }
   const { data: userData } = await supabase.auth.getUser()
+  if (!userData.user) {
+    alert('You must be logged in to add a client')
+    return
+  }
   console.log('USER:', userData.user.id)
   const { data, error } = await supabase.from('clients').insert([
     {
