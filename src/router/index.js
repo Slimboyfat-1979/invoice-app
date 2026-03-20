@@ -1,6 +1,7 @@
 import Clients from '@/views/Clients.vue'
 import CreateInvoice from '@/views/CreateInvoice.vue'
 import Dashboard from '@/views/Dashboard.vue'
+import InvoiceDetail from '@/views/InvoiceDetail.vue'
 import Invoices from '@/views/Invoices.vue'
 import Login from '@/views/Login.vue'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -23,6 +24,10 @@ const router = createRouter({
     {
         path: "/invoices",
         component: Invoices
+    },
+    {
+        path: "/invoices/:id",
+        component: InvoiceDetail
     },
     {
         path: '/create-invoice',
