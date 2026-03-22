@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { supabase } from '@/services/supabase'
 
+const router = useRouter()
 const email = ref('')
 const password = ref('')
 
@@ -19,10 +21,12 @@ async function signIn() {
     password: password.value,
   })
 
-  const session = await supabase.auth.getSession()
-  console.log('SESSION:', session)
+  if (error) {
+    alert(error.message)
+    return
+  }
 
-  console.log(data, error)
+  router.push('/dashboard')
 }
 </script>
 

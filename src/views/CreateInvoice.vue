@@ -1,7 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { supabase } from '@/services/supabase'
 
+const router = useRouter()
 const clients = ref([])
 const selectedClient = ref('')
 
@@ -33,11 +35,12 @@ function calculateTotal() {
 }
 
 async function createInvoice() {
-  const { data: userData } = await supabase.auth.getUser()
+  if (!selectedClient.value) {
+    alert('Please select a client')
+    return
+  }
 
-  console.log('USER ID:', userData.user.id)
-  console.log('CLIENT ID:', selectedClient.value)
-  console.log('TOTAL:', calculateTotal())
+  const { data: userData } = await supabase.auth.getUser()
 
   const { data: invoice, error } = await supabase
     .from('invoices')
@@ -52,16 +55,8 @@ async function createInvoice() {
     .select()
     .single()
 
-  console.log('Invoice', invoice)
-  console.log('Error', error)
-
-  if (!selectedClient.value) {
-    alert('Please select a client')
-    return
-  }
-
   if (!invoice) {
-    console.log('Invoice Faile', error)
+    console.log('Invoice creation failed', error)
     return
   }
 
@@ -74,7 +69,9 @@ async function createInvoice() {
 
   const { error: itemError } = await supabase.from('invoice_items').insert(itemsToInsert)
 
-  console.log('ITEMS ERROR:', itemError)
+  if (!itemError) {
+    router.push(`/invoices/${invoice.id}`)
+  }
 }
 
 onMounted(() => {
@@ -106,8 +103,8 @@ onMounted(() => {
     </div>
     <div v-for="(item, index) in items" :key="index" class="item-row">
       <input type="text" v-model="item.description" placeholder="Item description" />
-      <input type="number" v-model="item.quantity" min="1" placeholder="1" />
-      <input type="number" v-model="item.price" min="0" step="0.01" placeholder="0.00" />
+      <input type="number" v-model.number="item.quantity" min="1" placeholder="1" />
+      <input type="number" v-model.number="item.price" min="0" step="0.01" placeholder="0.00" />
     </div>
     <button class="btn btn-secondary" @click="addItem">+ Add Item</button>
   </div>
